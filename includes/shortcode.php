@@ -21,47 +21,56 @@ add_shortcode('ecsl-snippets', 'ecsl_snippets');
  *
  * @return string - the html that will be printed in place of the shortcode
  */
-function ecsl_snippet($args){
+function ecsl_snippet($atts){
     // UNDER DEVELOPMENT !
 	$html = '';
-	if(in_array('id', $args)) {
-		$idstr = int($args['id']);
-		if(strpos($idstr, ',') == false) {
-			if ( get_post_type( $idstr ) !== 'ecsl' ) {
-				$idarray = array(- 99);
-			}else{
-				$idarray = array($idstr);
-			}
-		}else{
-			$idarray = explode(',', $idstr);
-		}
-	}else{ $idarray = array(-99); }
+    $atts = shortcode_atts( array(  'id' => -99,
+                                    'code_only' => true,
+                                    'linked' => true,
+                                    'rand_id' => false
+            ), $atts );
+    $idstr = $atts['id'];
+    $code_only = ($atts['code_only'] == 'true' ? true : false);
+    $linked = ($atts['linked'] == 'true' ? true : false);
+    $rand_id = ($atts['rand_id'] == 'true' ? true : false);
+    if(strpos($idstr, ',') == false) {
+        if ( get_post_type( $idstr ) !== 'ecsl' ) {
+            $idarray = array(- 99);
+        }else{
+            $idarray = array($idstr);
+        }
+    }else{
+        $idarray = explode(',', $idstr);
+    }
 
-	if(in_array(-99, $idarray)) {
-        ob_start();
-        var_dump($args);
-        $result = ob_get_clean();
-		return '<pre class="prettyprint">No snippet ID supplied. ARGS: ' . $result . '</pre>';
-	}
-	if(is_array($idarray)) {
 		foreach($idarray as $id){
 			if(get_post_type( $id ) == 'ecsl' ) {
 				$post = get_post($id);
-				$snippet = get_post_meta($id, '_ecsl');
-                $title = $post->post_title();
-                $date = $post->post_date();
-                $author = get_userdata($post->post_author());
+				$snp = get_post_meta($id, '_ecsl');
+                $snippet = $snp[0];
+                $title = ($post->post_title == '' ? 'Untitled #' . ( $rand_id ? randid() : $id ) : $post->post_title );
+                $date = date('M jS Y - H:i', strtotime($post->post_date));
+                $author = get_userdata($post->post_author);
                 $lang = $snippet['language'];
-                $code = $snippet['code'];
+                $code = esc_html($snippet['code']);
                 $desc = $snippet['description'];
-                $html = <<<html
-<h2>$title</h2>
-Posted on <span>$date</span> by <span>$author->first_name $author->last_name</span>
-<pre class="prettyprint">$code</pre>
+                $perma = get_permalink($post->ID);
+                $tags = get_the_term_list($post->ID, 'tags', '', ', ', '');
+                $html .= '<pre>' . (!$code_only ? ($linked ? '<a href="' . $perma . '">'. $title . '</a>' : $title) . ' - ' . $lang . '<br>' . $desc : '' );
+                $html .= '<code>' . $code . '</code>';
+                $html .= (!$code_only ? 'Tags: ' . $tags . '<br>Posted on ' . $date . ' by ' . $author->display_name : '' ) . '</pre>';
+/*                    $tmp =<<<html
+<pre>$title - $lang
+$desc
+<code>$code</code>Tags: $tags
+Posted on $date by $author->display_name</pre>
+html; */
+			}else{
+                $html .= <<<html
+<pre>Invalid snippet ID: $idstr</pre>
 html;
-			}
+            }
 		}
-	}
 	return $html;
 }
 
@@ -70,37 +79,64 @@ html;
  *
  * @return string - the html that will be printed in place of the shortcode
  */
-function ecsl_snippets() {
+function ecsl_snippets($atts) {
     // UNDER DEVELOPMENT !
 	$html = '';
+    $atts = shortcode_atts( array( 'rand_id' => false ), $atts );
+    $rand_id = ($atts['rand_id'] == 'true' ? true : false);
 	$args = array(
-		'posts_per_page' => 25,
+		'posts_per_page' => -1,
         'post_type' => 'ecsl',
-        'post_status' => 'published'
+        'post_status' => 'publish'
 	);
     $posts = get_posts($args);
     if(is_array($posts)) {
+        $html .= <<<html
+<div class="section group row-header">
+	<div class="col span_2_of_8">Title</div>
+	<div class="col span_1_of_8">Date</div>
+	<div class="col span_1_of_8">Language</div>
+	<div class="col span_1_of_8">Author</div>
+	<div class="col span_2_of_8">Description</div>
+	<div class="col span_1_of_8">Tags</div>
+</div>
+html;
 		foreach($posts as $post){
 			if(get_post_type( $post ) == 'ecsl' ) {
-				$snippet = get_post_meta($post->ID, '_ecsl');
-				$title = $post->post_title();
-                $date = $post->post_date();
-				$author = get_userdata($post->post_author());
+                $snp = get_post_meta($post->ID, '_ecsl');
+                $snippet = $snp[0];
+                $title = ($post->post_title == '' ? 'Untitled #' . ( $rand_id ? randid() : $post->ID ) : $post->post_title );
+                $date = date('M jS Y', strtotime($post->post_date));
+				$author = get_userdata($post->post_author)->display_name;
+                $link = get_permalink($post->ID);
 				$lang = $snippet['language'];
-				$code = $snippet['code'];
 				$desc = $snippet['description'];
+                $tags = get_the_term_list($post->ID, 'tags', '', ', ', '');
 				$html .= <<<html
-<h2>$title</h2>
-Posted on <span>$date</span> by <span>$author->first_name $author->last_name</span>
-<pre class="prettyprint">$code</pre>
+<div class="section group row">
+    <div class="col span_2_of_8 col-title"><a href="$link" target="_blank">$title</a></div>
+    <div class="col span_1_of_8 col-date">$date</div>
+    <div class="col span_1_of_8 col-language">$lang</div>
+    <div class="col span_1_of_8 col-author">$author</div>
+    <div class="col span_2_of_8 col-description">$desc</div>
+    <div class="col span_1_of_8 col-tags">$tags</div>
+</div>
 html;
 			}
 		}
+        return $html;
 	}else{
         ob_start();
         var_dump($posts);
         $result = ob_get_clean();
-        return '<pre class="prettyprint">No snippet ID supplied. ARGS: ' . $result . '</pre>';
+        return '<pre>No snippes found.</pre>';
     }
-    return $html;
+}
+
+function randid(){
+    $ret = '';
+    for($i = 0; $i <=5; $i++) {
+        $ret .= rand(0, 9);
+    }
+    return $ret;
 }

@@ -11,16 +11,23 @@
  */
 ?>
 <style type="text/css">
-	.row { width: 100% !important; padding-bottom: 15px; }
+	.row1 { width: 100% !important; padding-bottom: 15px; }
 	.col-1 { width: 20%; display: inline-block;}
 	.col-2 { width: 80%; display: inline-block; float: right;}
 	.tt-input input { width: 400px !important; }
 	.clearfix { clear: both; margin-bottom: 15px; }
 	#titlediv div.inside { display: none; }
+    .widefat-70 {
+        min-height: 70px;
+    }
+    .widefat-300 {
+        min-height: 150px;
+        height: 300px;
+    }
 </style>
 <div class="my_meta_control">
 	<?php $metabox->the_field('language'); ?>
-	<div class="row">
+	<div class="row1">
 	    <div class="col-1">
 	        <label>Language:</label>
 	    </div>
@@ -39,17 +46,17 @@
 	    </div>
 	</div>
 	<?php $metabox->the_field('description'); ?>
-	<div class="row">
+	<div class="row1">
 	    <div class="col-1">
 	        <label>Description:</label>
 	    </div>
 		<div class="col-2">
-			<textarea name="<?php $metabox->the_name(); ?>" class="widefat snippet-main-content"><?php $metabox->the_value();?></textarea>
+			<textarea name="<?php $metabox->the_name(); ?>" class="widefat widefat-70 snippet-main-content"><?php $metabox->the_value();?></textarea>
 		</div>
 	</div>
 	<div class="clearfix"></div>
 	<?php $metabox->the_field('code'); ?>
-	<div class="row">
+	<div class="row1">
 		<div class="col-1">
 			<label>Snippet:</label>
 		</div>
@@ -61,11 +68,11 @@
 			</div>
 			<div id="snippet-content"><?php $metabox->the_value(); ?></div>
 			<textarea name="<?php $metabox->the_name(); ?>" class="widefat snippet-main-content" class="hidden"><?php $metabox->the_value() ?></textarea-->
-			<textarea name="<?php $metabox->the_name(); ?>" class="widefat snippet-main-content"><?php $metabox->the_value() ?></textarea>
+			<textarea name="<?php $metabox->the_name(); ?>" class="prettyprint widefat widefat-300 snippet-main-content"><?php $metabox->the_value() ?></textarea>
 		</div>
 	</div>
 	<div class="clearfix"></div>
-	<div class="row">
+	<div class="row1">
 		<div class="col-1"></div>
 		<div class="col-2">
 			The snippet text box does not support highlightning or auto intendent at the time. That will arrive in a future update.

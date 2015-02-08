@@ -17,9 +17,10 @@ define( 'ECSL_AUTHOR_EMAIL', 'me@izaac.se' );
 // Define internal plugin paths
 define( 'ECSL_PATH', plugin_dir_path(__FILE__) );
 define( 'ECSL_URL', plugin_dir_url(__FILE__) );
-define( 'ECSL_PATH_TEMPLATE', ECSL_PATH . 'templates/' );
-define( 'ECSL_PATH_INCLUDES', ECSL_PATH . 'includes/' );
-define( 'ECSL_PATH_METABOXES', ECSL_PATH_INCLUDES . 'metaboxes/' );
+define( 'ECSL_PATH_TEMPLATE', plugin_dir_path( __FILE__ ) . 'templates/' );
+define( 'ECSL_PATH_INCLUDES', plugin_dir_path( __FILE__ ) . 'includes/' );
+define( 'ECSL_URL_INCLUDES', plugins_url( 'includes/', __FILE__ ));
+define( 'ECSL_PATH_METABOXES', plugin_dir_path( __FILE__ ) . 'includes/metaboxes/' );
 define( 'ECSL_URL_CSS', ECSL_URL_INCLUDES . 'css/' );
 define( 'ECSL_URL_JS', ECSL_URL_INCLUDES . 'js/' );
 
@@ -31,7 +32,14 @@ include( ECSL_PATH_INCLUDES . 'shortcode.php' );
 add_filter('template_include', 'my_template');
 
 add_action( 'admin_enqueue_scripts', 'enqueue_scripts_styles' );
+add_action( 'wp_enqueue_scripts', 'enqueue_scripts_styles' );
 add_action( 'wp_ajax_ij_codesnippet-ace-ajax', 'ace_ajax' );
+
+add_action( 'wp_head', 'initiate_highlighter' );
+
+function initiate_highlighter() {
+    echo '<script>hljs.initHighlightingOnLoad();</script>';
+}
 
 function my_template($template) {
 	if( get_query_var('post_type') == 'easycodesnippet' ) {
@@ -47,10 +55,21 @@ function my_template($template) {
 function enqueue_scripts_styles()
 {
 	if(is_admin()) {
-		wp_register_style( 'acsl-ace_css', ECSL_URL_CSS .'ace/ace.css', null, '1.0' );
-		wp_register_script( 'ecsl-ace_editor', ECSL_URL_JS . '/ace/ace.js', array( 'jquery' ), '1.0', true );
+		wp_register_style( 'acsl-ace_css', ECSL_URL_CSS . 'ace/ace.css', null, '1.0' );
+		wp_register_script( 'ecsl-ace_editor', ECSL_URL_JS . 'ace/ace.js', array( 'jquery' ), '1.0', true );
 		wp_register_script( 'ecsl-admin-js', ECSL_URL_JS . 'ecsl-admin.js', array( 'jquery', 'ace_editor' ), '1.0', true );
-		wp_enqueue_script( 'ecsl-ace_editor' );
+        wp_enqueue_script( 'ecsl-ace_editor' );
+
+        wp_register_style( 'ecsl-shortcode', ECSL_URL_CSS . 'shortcode.css' );
+        wp_enqueue_style( 'ecsl-shortcode' );
+
+
+        wp_register_script( 'ecsl-highlighter-js', '//cdn.jsdelivr.net/highlight.js/8.4/highlight.min.js' );
+        wp_register_style( 'ecsl-highlighter-css', '//cdn.jsdelivr.net/highlight.js/8.4/styles/default.min.css');
+        wp_enqueue_script( 'ecsl-highlighter-js' );
+        wp_enqueue_style( 'ecsl-highlighter-css' );
+
+        wp_enqueue_script( 'ecsl-js', ECSL_URL_JS . 'ecsl.js' );
 
 		$current_user = wp_get_current_user();
 		wp_localize_script( 'ecsl-admin-js', 'ace_editor_globals', array(
@@ -63,8 +82,15 @@ function enqueue_scripts_styles()
 		) );
 		wp_enqueue_script( 'ecsladmin-js' );
 	}else {
-		wp_register_script( 'ecsl-prettify', 'https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js' );
-		wp_enqueue_script( 'ecsl-prettify' );
+        wp_register_script( 'ecsl-highlighter-js', '//cdn.jsdelivr.net/highlight.js/8.4/highlight.min.js' );
+        wp_register_style( 'ecsl-highlighter-css', '//cdn.jsdelivr.net/highlight.js/8.4/styles/default.min.css');
+        wp_enqueue_script( 'ecsl-highlighter-js' );
+        wp_enqueue_style( 'ecsl-highlighter-css' );
+
+        wp_register_style( 'ecsl-shortcode', ECSL_URL_CSS . 'shortcode.css' );
+        wp_enqueue_style( 'ecsl-shortcode' );
+
+        wp_enqueue_script( 'ecsl-js', ECSL_URL_JS . 'ecsl.js' );
 	}
 }
 
