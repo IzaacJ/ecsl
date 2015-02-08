@@ -11,6 +11,8 @@ Easy Code Snippets Library (here on called ECSL) is developed to create a gist-l
 ###### Parameter(s):
 int _id_ : The specific ID of the code snippet to show.
 
+bool _only_code_ : Default: true. If set to true it will only show highlighted code, no extras like title, date, tags, language.
+
 ##### Show a list of snippets anywhere on the site, with prettify highlightning:
 ````
 [ecsl-snippets]
