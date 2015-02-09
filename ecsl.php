@@ -27,6 +27,7 @@ define( 'ECSL_URL_JS', ECSL_URL_INCLUDES . 'js/' );
 if(!class_exists('WPAlchemy_MetaBox', false)) {
 	include_once( ECSL_PATH_INCLUDES . 'wpalchemy/MetaBox.php' );
 }
+include( ECSL_PATH_INCLUDES . 'info.php' );
 include( ECSL_PATH_INCLUDES . 'helpers.php' );
 include( ECSL_PATH_INCLUDES . 'post-type.php' );
 include( ECSL_PATH_INCLUDES . 'shortcode.php' );
@@ -75,8 +76,8 @@ function enqueue_scripts_styles()
 		wp_register_script( 'ecsl-admin-js', ECSL_URL_JS . 'ecsl-admin.js', array( 'jquery', 'ace_editor' ), '1.0', true );
         wp_enqueue_script( 'ecsl-ace_editor' );
 
-        wp_register_style( 'ecsl-shortcode', ECSL_URL_CSS . 'shortcode.css' );
-        wp_enqueue_style( 'ecsl-shortcode' );
+        //wp_register_style( 'ecsl-shortcode', ECSL_URL_CSS . 'shortcode.css' );
+        //wp_enqueue_style( 'ecsl-shortcode' );
 
 
         wp_register_script( 'ecsl-highlighter-js', '//cdn.jsdelivr.net/highlight.js/8.4/highlight.min.js' );
