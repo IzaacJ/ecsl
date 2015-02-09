@@ -16,10 +16,27 @@ get_header(); ?>
 		<div id="content" class="site-content" role="main">
 
 			<?php while ( have_posts() ) : the_post(); ?>
-				<?php global $post;
-				$snippet = get_post_meta($post->ID, '_ecsl');
-				?>
 
+                <?php
+                $code_only = false;
+                $linked = true;
+                $rand_id = false;
+
+                $snp = get_post_meta($id, '_ecsl');
+                $snippet = $snp[0];
+                $title = (get_the_title( $id ) == '' ? 'Untitled #' . ( $rand_id ? randid() : $id ) : get_the_title( $id ) );
+                $date = date('M jS Y - H:i', strtotime($post->post_date));
+                $author = get_userdata(get_post_field( 'post_author', $id ));
+                $lang = $snippet['language'];
+                $code = esc_html($snippet['code']);
+                $desc = $snippet['description'];
+                $perma = get_permalink($id);
+                $tags = get_the_term_list($id, 'snippet_tags', '', ', ', '');
+                ?>
+                <div class="entry-content">
+<pre><?=$title;?> - <?=$lang;?><br><hr><?=$desc;?>
+<code><?=$code;?></code>Tags: <?=$tags;?><hr>Posted on <?=$date;?> by <?=$author->display_name;?></pre>
+                </div>
 
 			<?php endwhile; // end of the loop. ?>
 

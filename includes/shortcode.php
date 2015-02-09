@@ -55,7 +55,7 @@ function ecsl_snippet($atts){
                 $code = esc_html($snippet['code']);
                 $desc = $snippet['description'];
                 $perma = get_permalink($post->ID);
-                $tags = get_the_term_list($post->ID, 'tags', '', ', ', '');
+                $tags = get_the_term_list($post->ID, 'snippet_tags', '', ', ', '');
                 $html .= '<pre>' . (!$code_only ? ($linked ? '<a href="' . $perma . '">'. $title . '</a>' : $title) . ' - ' . $lang . '<br>' . $desc : '' );
                 $html .= '<code>' . $code . '</code>';
                 $html .= (!$code_only ? 'Tags: ' . $tags . '<br>Posted on ' . $date . ' by ' . $author->display_name : '' ) . '</pre>';
@@ -111,7 +111,7 @@ html;
                 $link = get_permalink($post->ID);
 				$lang = $snippet['language'];
 				$desc = $snippet['description'];
-                $tags = get_the_term_list($post->ID, 'tags', '', ', ', '');
+                $tags = get_the_term_list($post->ID, 'snippet_tags', '', ', ', '');
 				$html .= <<<html
 <div class="section group row">
     <div class="col span_2_of_8 col-title"><a href="$link" target="_blank">$title</a></div>

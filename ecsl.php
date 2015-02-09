@@ -24,12 +24,15 @@ define( 'ECSL_PATH_METABOXES', plugin_dir_path( __FILE__ ) . 'includes/metaboxes
 define( 'ECSL_URL_CSS', ECSL_URL_INCLUDES . 'css/' );
 define( 'ECSL_URL_JS', ECSL_URL_INCLUDES . 'js/' );
 
-include( ECSL_PATH_INCLUDES . 'wpalchemy/MetaBox.php' );
+if(!class_exists('WPAlchemy_MetaBox', false)) {
+	include_once( ECSL_PATH_INCLUDES . 'wpalchemy/MetaBox.php' );
+}
 include( ECSL_PATH_INCLUDES . 'helpers.php' );
 include( ECSL_PATH_INCLUDES . 'post-type.php' );
 include( ECSL_PATH_INCLUDES . 'shortcode.php' );
+include( ECSL_PATH_INCLUDES . 'class-ecsl-template-loader.php' );
 
-add_filter('template_include', 'my_template');
+add_filter('template_include', 'my_template', 99);
 
 add_action( 'admin_enqueue_scripts', 'enqueue_scripts_styles' );
 add_action( 'wp_enqueue_scripts', 'enqueue_scripts_styles' );
@@ -37,19 +40,31 @@ add_action( 'wp_ajax_ij_codesnippet-ace-ajax', 'ace_ajax' );
 
 add_action( 'wp_head', 'initiate_highlighter' );
 
+// Template loader instantiated elsewhere, such as the main plugin file
+$ecsl_template_loader = new ECSL_Template_Loader;
+// ...
+// This function can live wherever is suitable in your plugin
+function ecsl_get_template_part( $slug, $name = null, $load = true ) {
+    global $ecsl_template_loader;
+    $ecsl_template_loader->get_template_part( $slug, $name, $load );
+}
+
 function initiate_highlighter() {
     echo '<script>hljs.initHighlightingOnLoad();</script>';
 }
 
 function my_template($template) {
-	if( get_query_var('post_type') == 'easycodesnippet' ) {
-		if ( is_single() ) {
-			return ECSL_PATH_TEMPLATE . 'snippet-single.php';
-		} elseif ( is_archive() || is_search() ) {
-			return ECSL_PATH_TEMPLATE . 'snippet-archive.php';
-		}
-	}
-	return $template;
+    if ( is_singular( 'ecsl' ) ) {
+        return ecsl_get_template_part('snippet', 'single');
+        //return ECSL_PATH_TEMPLATE . 'snippet-single.php';
+    }
+    if ( is_post_type_archive('ecsl') || is_tax('snippet_tags') || is_search() && get_query_var('post_type' == 'ecsl')) {
+        return ecsl_get_template_part('snippet', 'archive');
+        //return ECSL_PATH_TEMPLATE . 'snippet-archive.php';
+    }
+    else {
+        return $template;
+    }
 }
 
 function enqueue_scripts_styles()

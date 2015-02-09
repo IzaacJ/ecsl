@@ -1,0 +1,59 @@
+<?php
+/**
+ * Meal Planner
+ *
+ * @package   Easy_CodeSnippet_CPT_Template
+ * @since     1.0.0
+ * @author    Izaac Johansson [izaac.se]
+ * @license   LICENSE.txt
+ * @link      http://izaac.se
+ * @copyright Copyright © 2015 Izaac Johansson
+ */
+ 
+if( ! class_exists( 'Gamajo_Template_Loader' ) ) {
+	require plugin_dir_path( __FILE__ ) . 'class-gamajo-template-loader.php';
+}
+
+/**
+ * Template loader for Meal Planner.
+ *
+ * Only need to specify class properties here.
+ *
+ * @package Meal_Planner
+ * @author  Gary Jones
+ */
+class ECSL_Template_Loader extends Gamajo_Template_Loader {
+
+	/**
+	 * Prefix for filter names.
+	 *
+	 * @since 1.0.0
+	 * @type string
+	 */
+	protected $filter_prefix = 'ecsl';
+
+	/**
+	 * Directory name where custom templates for this plugin should be found in the theme.
+	 *
+	 * @since 1.0.0
+	 * @type string
+	 */
+	protected $theme_template_directory = 'ecsl';
+
+	/**
+	 * Reference to the root directory path of this plugin.
+	 *
+	 * Can either be a defined constant, or a relative reference from where the subclass lives.
+	 *
+	 * In this case, `MEAL_PLANNER_PLUGIN_DIR` would be defined in the root plugin file as:
+	 *
+	 * ~~~
+	 * define( 'MEAL_PLANNER_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+	 * ~~~
+	 *
+	 * @since 1.0.0
+	 * @type string
+	 */
+	protected $plugin_directory = ECSL_PATH;
+
+}

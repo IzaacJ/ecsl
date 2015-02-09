@@ -52,6 +52,10 @@
 }
 .entry-content pre {
     background: inherit !important;
+    margin-bottom: 15px !important;
+}
+.entry-content pre hr {
+    margin-bottom: 5px;
 }
 
 /***************************************************************/
